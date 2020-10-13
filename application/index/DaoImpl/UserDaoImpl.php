@@ -7,6 +7,8 @@ namespace app\index\DaoImpl;
 use app\index\dao\UserDao;
 use app\index\model\User;
 use think\Db;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 use think\Exception;
 use think\exception\DbException;
 use think\exception\PDOException;
@@ -83,12 +85,38 @@ class UserDaoImpl implements UserDao
     /**
      * 获取所有用户
      *
+     * @param $page
+     * @param $limit
      * @return mixed json
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function allUser()
+    public function allUser($page,$limit)
     {
         // TODO: Implement allUser() method.
-
+        $datas = null;
+        $status = null;
+        $count = null;
+        $tol = ($page - 1) * $limit; // 计算分页公式
+        $datas = Db::name('user')
+            ->limit($tol.$limit)
+            ->select();
+        if ($datas == null){
+            $status = 404;
+        } else {
+            $count = Db::name('user')
+                ->select();
+            $status = 200;
+        }
+        $go = [
+            "code" => 0,
+            "msg" => "ok",
+            "status" => $status,
+            "data" => $datas,
+            "count" => count($count)
+        ];
+        return json($go);
     }
 
     /**
@@ -150,12 +178,36 @@ class UserDaoImpl implements UserDao
     /**
      * 通过关键字查询用户
      *
+     * @param $page
+     * @param $limit
      * @param $keyword
      * @return mixed json
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function blurSearchByKey($keyword)
+    public function blurSearchByKey($page,$limit,$keyword)
     {
         // TODO: Implement blurSearchByKey() method.
+        $datas = null;
+        $status = null;
+        $count = null;
+        $tol = ($page - 1) * $limit; // 计算分页公式
+        $datas = Db::name('user')
+            ->where('username','like','%'.$keyword.'%')
+            ->limit($tol,$limit)
+            ->select();
+        $count = Db::name('user')
+            ->where('username','like','%'.$keyword.'%')
+            ->select();
+        $go = [
+            "code" => 0,
+            "msg" => "ok",
+            "status" => $status,
+            "data" => $datas,
+            "count" => $count($count)
+        ];
+        return json($go);
     }
 
     /**

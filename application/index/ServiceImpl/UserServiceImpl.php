@@ -6,6 +6,8 @@ namespace app\index\ServiceImpl;
 
 use app\index\factory\UserFactory;
 use app\index\service\UserService;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 use think\exception\DbException;
 use think\response\Json;
 
@@ -45,11 +47,17 @@ class UserServiceImpl implements UserService
     /**
      * 获取所有用户服务
      *
+     * @param $page
+     * @param $limit
      * @return mixed json
+     * @throws DbException
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
      */
-    public function allUser()
+    public function allUser($page,$limit)
     {
         // TODO: Implement allUser() method.
+        return UserFactory::getUserDao()->allUser($page,$limit);
     }
 
     /**
@@ -81,12 +89,18 @@ class UserServiceImpl implements UserService
     /**
      * 通过关键字查询用户服务
      *
+     * @param $page
+     * @param $limit
      * @param $keyword
      * @return mixed json
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function blurSearchByKey($keyword)
+    public function blurSearchByKey($page,$limit,$keyword)
     {
         // TODO: Implement blurSearchByKey() method.
+        return UserFactory::getUserDao()->blurSearchByKey($page,$limit,$keyword);
     }
 
     /**
